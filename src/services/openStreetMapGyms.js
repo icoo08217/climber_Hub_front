@@ -41,6 +41,14 @@ out center tags;`
   }
 }
 
+export async function findSeoulClimbingGymById(gymId) {
+  const curatedGym = SEOUL_CURATED_GYMS.find((gym) => gym.id === gymId)
+  if (curatedGym) return curatedGym
+
+  const gyms = await loadSeoulClimbingGyms()
+  return gyms.find((gym) => gym.id === gymId) ?? null
+}
+
 async function fetchOverpass(query) {
   let lastError
   for (const endpoint of OVERPASS_ENDPOINTS) {

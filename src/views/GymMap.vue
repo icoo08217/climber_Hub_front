@@ -7,7 +7,7 @@ import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
-import { loadSeoulClimbingGyms } from '../services/openStreetMapGyms'
+import { loadGyms } from '../services/gyms'
 
 setWorkerUrl(workerUrl)
 
@@ -29,7 +29,7 @@ const filteredGyms = computed(() => {
   const keyword = query.value.trim().toLocaleLowerCase('ko')
   if (!keyword) return gyms.value
   return gyms.value.filter((gym) =>
-    [gym.name, gym.address, gym.category].some((value) =>
+    [gym.name, gym.address, gym.description].some((value) =>
       String(value ?? '')
         .toLocaleLowerCase('ko')
         .includes(keyword),
@@ -40,7 +40,7 @@ const filteredGyms = computed(() => {
 onMounted(() => initializeMap())
 onBeforeUnmount(destroyMap)
 
-async function initializeMap(force = false) {
+async function initializeMap() {
   loading.value = true
   errorMessage.value = ''
   selectedGym.value = null
@@ -56,7 +56,7 @@ async function initializeMap(force = false) {
       attributionControl: true,
     })
     map.addControl(new NavigationControl({ showCompass: false }), 'top-right')
-    const gymsPromise = loadSeoulClimbingGyms({ force })
+    const gymsPromise = loadGyms()
     await waitForMapLoad(map)
     gyms.value = await gymsPromise
     renderMarkers()
@@ -93,13 +93,16 @@ function renderMarkers() {
     const element = document.createElement('button')
     element.type = 'button'
     element.className = 'gym-map-marker'
+    const pending = gym.verificationStatus === 'PENDING'
+    if (pending) element.classList.add('pending')
     element.title = gym.name
-    element.setAttribute('aria-label', `${gym.name} 상세 보기`)
+    element.setAttribute('aria-label', pending ? `${gym.name} 검증 중` : `${gym.name} 상세 보기`)
+    element.disabled = pending
     element.innerHTML =
       '<span class="gym-map-marker-shape"><span aria-hidden="true">▲</span></span>'
     element.addEventListener('click', (event) => {
       event.stopPropagation()
-      selectGym(gym, false)
+      if (!pending) selectGym(gym, false)
     })
 
     const marker = new Marker({ element, anchor: 'bottom' })
@@ -112,6 +115,7 @@ function renderMarkers() {
 }
 
 function selectGym(gym, moveMap = true) {
+  if (gym.verificationStatus !== 'VERIFIED' || !gym.active) return
   selectedGym.value = gym
   if (moveMap && map) {
     map.flyTo({ center: [gym.longitude, gym.latitude], zoom: 14, essential: false })
@@ -160,10 +164,7 @@ async function logout() {
         <p>SEOUL CLIMBING MAP</p>
         <h1>오늘 오를 벽을<br /><span>지도에서 찾아봐요.</span></h1>
       </div>
-      <p>
-        검증한 주요 암장과 OpenStreetMap의 서울 클라이밍 장소를 OpenFreeMap 지도 위에 보여줘요.
-        마커를 누르면 장소 정보를 확인할 수 있어요.
-      </p>
+      <p>DB에 등록된 서울 암장을 보여줘요. 회색 암장은 검증 중이라 아직 선택할 수 없어요.</p>
     </section>
 
     <section class="gym-map-layout" aria-label="서울 암장 지도">
@@ -189,23 +190,28 @@ async function logout() {
         <p v-else-if="filteredGyms.length === 0" class="gym-state">
           {{
             gyms.length === 0
-              ? 'OpenStreetMap에 등록된 서울 암장을 찾지 못했어요.'
+              ? '등록된 서울 암장을 찾지 못했어요.'
               : '검색 조건에 맞는 암장이 없어요.'
           }}
         </p>
         <div v-else class="gym-result-list">
           <button
             v-for="gym in filteredGyms"
-            :key="gym.id"
+            :key="gym.gymId"
             type="button"
             class="gym-result-item"
-            :class="{ selected: selectedGym?.id === gym.id }"
+            :class="{
+              selected: selectedGym?.gymId === gym.gymId,
+              pending: gym.verificationStatus === 'PENDING',
+            }"
+            :disabled="gym.verificationStatus === 'PENDING'"
             @click="selectGym(gym)"
           >
             <span class="gym-result-marker" aria-hidden="true">▲</span>
             <span>
               <strong>{{ gym.name }}</strong>
               <small>{{ gym.address }}</small>
+              <small v-if="gym.verificationStatus === 'PENDING'">정보 검증 중</small>
             </span>
             <span aria-hidden="true">›</span>
           </button>
@@ -240,17 +246,23 @@ async function logout() {
             </div>
             <div>
               <dt>분류</dt>
-              <dd>{{ selectedGym.category }}</dd>
+              <dd>{{ selectedGym.description }}</dd>
             </div>
           </dl>
-          <a
-            :href="selectedGym.website || selectedGym.detailsUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {{ selectedGym.website ? '암장 웹사이트 보기' : selectedGym.detailsLabel }}
-            <span aria-hidden="true">↗</span>
-          </a>
+          <div class="gym-detail-actions">
+            <RouterLink :to="{ name: 'gym-detail', params: { gymId: selectedGym.gymId } }">
+              상세 페이지 보기 <span aria-hidden="true">→</span>
+            </RouterLink>
+            <a
+              v-if="selectedGym.website || selectedGym.detailsUrl"
+              :href="selectedGym.website || selectedGym.detailsUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {{ selectedGym.website ? '암장 웹사이트' : selectedGym.detailsLabel }}
+              <span aria-hidden="true">↗</span>
+            </a>
+          </div>
         </article>
       </div>
     </section>

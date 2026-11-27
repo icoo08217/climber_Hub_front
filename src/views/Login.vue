@@ -4,6 +4,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import AuthLayout from '../components/AuthLayout.vue'
+import PasswordVisibilityIcon from '../components/PasswordVisibilityIcon.vue'
 import KakaoButton from '../components/KakaoButton.vue'
 import { loadSocialProviders, startKakaoLogin, socialErrorMessage } from '../services/social'
 
@@ -92,7 +93,7 @@ async function login() {
             :disabled="pending"
             @click="showPassword = !showPassword"
           >
-            {{ showPassword ? '숨기기' : '보기' }}
+            <PasswordVisibilityIcon :visible="showPassword" />
           </button>
         </div>
       </div>

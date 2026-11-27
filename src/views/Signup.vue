@@ -3,6 +3,7 @@ defineOptions({ name: 'SignupView' })
 import { reactive, ref } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import AuthLayout from '../components/AuthLayout.vue'
+import PasswordVisibilityIcon from '../components/PasswordVisibilityIcon.vue'
 
 const auth = useAuthStore()
 const form = reactive({ loginId: '', password: '', email: '', name: '' })
@@ -117,7 +118,7 @@ async function signup() {
                 :aria-label="showPassword ? '비밀번호 숨기기' : '비밀번호 보기'"
                 @click="showPassword = !showPassword"
               >
-                {{ showPassword ? '숨기기' : '보기' }}
+                <PasswordVisibilityIcon :visible="showPassword" />
               </button>
             </div>
             <small id="password-help">8자 이상, 한글 등 다국어 포함 시 최대 72바이트</small>

@@ -52,6 +52,18 @@ export const useAuthStore = defineStore('auth', () => {
     await api.patch('/members/me/password', { currentPassword, newPassword })
   }
 
+  async function uploadProfileImage(file) {
+    const formData = new FormData()
+    formData.append('image', file)
+    const { data } = await api.post('/members/me/profile-image', formData)
+    member.value = data
+  }
+
+  async function deleteProfileImage() {
+    const { data } = await api.delete('/members/me/profile-image')
+    member.value = data
+  }
+
   async function logout() {
     await refreshCsrf()
     await api.post('/auth/logout')
@@ -59,5 +71,16 @@ export const useAuthStore = defineStore('auth', () => {
     initialized.value = true
   }
 
-  return { member, initialized, restore, login, signup, updateProfile, changePassword, logout }
+  return {
+    member,
+    initialized,
+    restore,
+    login,
+    signup,
+    updateProfile,
+    changePassword,
+    uploadProfileImage,
+    deleteProfileImage,
+    logout,
+  }
 })

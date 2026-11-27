@@ -3,6 +3,7 @@ defineOptions({ name: 'ProfileSettingsView' })
 import { ref } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import AuthLayout from '../components/AuthLayout.vue'
+import PasswordVisibilityIcon from '../components/PasswordVisibilityIcon.vue'
 
 const auth = useAuthStore()
 const name = ref(auth.member?.name ?? '')
@@ -10,6 +11,9 @@ const email = ref(auth.member?.email ?? '')
 const currentPassword = ref('')
 const newPassword = ref('')
 const confirmPassword = ref('')
+const showCurrentPassword = ref(false)
+const showNewPassword = ref(false)
+const showConfirmPassword = ref(false)
 const profilePending = ref(false)
 const passwordPending = ref(false)
 const profileMessage = ref('')
@@ -140,38 +144,71 @@ async function savePassword() {
           <fieldset :disabled="passwordPending">
             <div class="hub-field">
               <label for="current-password">현재 비밀번호</label>
-              <input
-                id="current-password"
-                v-model="currentPassword"
-                type="password"
-                required
-                autocomplete="current-password"
-              />
+              <div class="password-wrap">
+                <input
+                  id="current-password"
+                  v-model="currentPassword"
+                  :type="showCurrentPassword ? 'text' : 'password'"
+                  required
+                  autocomplete="current-password"
+                />
+                <button
+                  class="password-toggle"
+                  type="button"
+                  :aria-pressed="showCurrentPassword"
+                  :aria-label="showCurrentPassword ? '현재 비밀번호 숨기기' : '현재 비밀번호 보기'"
+                  @click="showCurrentPassword = !showCurrentPassword"
+                >
+                  <PasswordVisibilityIcon :visible="showCurrentPassword" />
+                </button>
+              </div>
             </div>
             <div class="hub-field">
               <label for="new-password">새 비밀번호</label>
-              <input
-                id="new-password"
-                v-model="newPassword"
-                type="password"
-                required
-                minlength="8"
-                maxlength="72"
-                autocomplete="new-password"
-              />
+              <div class="password-wrap">
+                <input
+                  id="new-password"
+                  v-model="newPassword"
+                  :type="showNewPassword ? 'text' : 'password'"
+                  required
+                  minlength="8"
+                  maxlength="72"
+                  autocomplete="new-password"
+                />
+                <button
+                  class="password-toggle"
+                  type="button"
+                  :aria-pressed="showNewPassword"
+                  :aria-label="showNewPassword ? '새 비밀번호 숨기기' : '새 비밀번호 보기'"
+                  @click="showNewPassword = !showNewPassword"
+                >
+                  <PasswordVisibilityIcon :visible="showNewPassword" />
+                </button>
+              </div>
               <small>8자 이상, UTF-8 기준 72바이트 이하</small>
             </div>
             <div class="hub-field">
               <label for="confirm-password">새 비밀번호 확인</label>
-              <input
-                id="confirm-password"
-                v-model="confirmPassword"
-                type="password"
-                required
-                minlength="8"
-                maxlength="72"
-                autocomplete="new-password"
-              />
+              <div class="password-wrap">
+                <input
+                  id="confirm-password"
+                  v-model="confirmPassword"
+                  :type="showConfirmPassword ? 'text' : 'password'"
+                  required
+                  minlength="8"
+                  maxlength="72"
+                  autocomplete="new-password"
+                />
+                <button
+                  class="password-toggle"
+                  type="button"
+                  :aria-pressed="showConfirmPassword"
+                  :aria-label="showConfirmPassword ? '비밀번호 확인 숨기기' : '비밀번호 확인 보기'"
+                  @click="showConfirmPassword = !showConfirmPassword"
+                >
+                  <PasswordVisibilityIcon :visible="showConfirmPassword" />
+                </button>
+              </div>
             </div>
           </fieldset>
           <div v-if="passwordMessage" class="hub-notice success" role="status">

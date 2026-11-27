@@ -326,19 +326,32 @@ button {
   position: relative;
 }
 .password-wrap input {
-  padding-right: 58px;
+  padding-right: 48px;
 }
 .password-toggle {
   position: absolute;
-  right: 12px;
+  right: 9px;
   top: 50%;
   transform: translateY(-50%);
   border: 0;
   background: transparent;
   color: #6e7d68;
-  font-size: 11px;
-  padding: 7px 2px;
-  min-height: 32px;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  padding: 6px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.password-toggle:hover:not(:disabled),
+.password-toggle:focus-visible {
+  color: var(--forest);
+  background: #edf2e8;
+}
+.password-toggle svg {
+  width: 20px;
+  height: 20px;
 }
 .hub-submit {
   display: flex;
@@ -540,6 +553,74 @@ button {
   flex-direction: column;
   gap: 18px;
 }
+.account-detail-stack {
+  margin-bottom: 23px;
+}
+.account-photo-editor {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.account-photo-preview {
+  display: grid;
+  width: 84px;
+  height: 84px;
+  flex: 0 0 84px;
+  place-items: center;
+  overflow: hidden;
+  border: 2px solid #d8e4c9;
+  border-radius: 24px;
+  color: #35512b;
+  background: var(--lime);
+  font-size: 30px;
+  font-weight: 750;
+}
+.account-photo-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.account-photo-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.account-file-button,
+.account-photo-save,
+.account-photo-delete {
+  min-height: 38px;
+  padding: 9px 12px;
+  border: 1px solid #bccbb7;
+  border-radius: 9px;
+  color: #405a43;
+  background: #f9faf6;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.account-file-button input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+.account-photo-save {
+  border-color: #416d4b;
+  color: #fff;
+  background: #416d4b;
+}
+.account-photo-delete {
+  border-color: #d6a5a0;
+  color: #8b3028;
+  background: #fff;
+}
+.account-photo-save:disabled,
+.account-photo-delete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 .settings-card {
   padding: 21px;
   border: 1px solid var(--line);
@@ -598,6 +679,12 @@ button {
   padding-bottom: 0;
   margin-bottom: 0;
   border-bottom: 0;
+}
+@media (max-width: 520px) {
+  .account-photo-editor {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
 .home-note {
   text-align: center;
@@ -1484,6 +1571,14 @@ button {
   border-bottom-color: transparent;
   background: #edf2e4;
 }
+.gym-result-item.pending,
+.gym-result-item.pending:hover {
+  color: #8a928c;
+  border-color: #d9ded9;
+  background: #eef0ed;
+  cursor: not-allowed;
+  opacity: 0.75;
+}
 .gym-result-item > span:nth-child(2) {
   min-width: 0;
   display: flex;
@@ -1577,6 +1672,10 @@ button {
   transition:
     scale 120ms ease,
     background-color 120ms ease;
+}
+.gym-map-marker.pending .gym-map-marker-shape {
+  color: #7f8982;
+  filter: grayscale(1);
 }
 .gym-map-marker-shape > span {
   display: block;
@@ -1676,7 +1775,11 @@ button {
   margin: 0;
   color: #43574e;
 }
-.gym-detail-card > a {
+.gym-detail-actions {
+  display: grid;
+  gap: 8px;
+}
+.gym-detail-actions > a {
   min-height: 38px;
   padding: 0 14px;
   display: flex;
@@ -1689,12 +1792,540 @@ button {
   font-size: 10px;
   font-weight: 650;
 }
+.gym-detail-actions > a + a {
+  border: 1px solid #dce4d8;
+  color: #40564b;
+  background: #f5f7f0;
+}
+.gym-profile-page {
+  min-height: 100svh;
+  padding-bottom: 38px;
+}
+.gym-profile-state {
+  width: min(1180px, 100%);
+  min-height: 440px;
+  margin: 28px auto 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 16px;
+  border: 1px solid #dce2d7;
+  border-radius: 22px;
+  color: #53675c;
+  background: #fff;
+}
+.gym-profile-state > span {
+  width: 34px;
+  height: 34px;
+  border: 3px solid #dce4d7;
+  border-top-color: var(--forest);
+  border-radius: 50%;
+  animation: gym-spin 0.8s linear infinite;
+}
+.gym-profile-error > span {
+  display: grid;
+  place-items: center;
+  border: 0;
+  color: #fff;
+  background: #934f43;
+  animation: none;
+}
+.gym-profile-error a {
+  color: var(--forest);
+  font-size: 11px;
+  font-weight: 700;
+}
+.gym-profile-hero {
+  width: min(1180px, 100%);
+  margin: 28px auto 0;
+  padding: 34px 40px 38px;
+  overflow: hidden;
+  position: relative;
+  border-radius: 22px;
+  color: #f5f8ee;
+  background: var(--forest);
+}
+.gym-profile-hero::after {
+  content: '△';
+  position: absolute;
+  right: 45px;
+  top: -95px;
+  color: #d2e88c12;
+  font-size: 260px;
+  line-height: 1;
+  transform: rotate(9deg);
+}
+.gym-profile-hero > * {
+  position: relative;
+  z-index: 1;
+}
+.gym-profile-breadcrumb {
+  display: flex;
+  gap: 9px;
+  color: #9fb4a7;
+  font-size: 9px;
+}
+.gym-profile-breadcrumb a {
+  color: var(--lime);
+  text-decoration: none;
+}
+.gym-profile-heading {
+  margin-top: 38px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px;
+}
+.gym-profile-label,
+.gym-profile-section-heading > span,
+.gym-profile-map-heading > div > span {
+  color: #91aa5b;
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 1.8px;
+}
+.gym-profile-heading h1 {
+  margin: 9px 0 8px;
+  font-size: clamp(34px, 5vw, 58px);
+  line-height: 1.05;
+  letter-spacing: -2.5px;
+}
+.gym-profile-heading p {
+  margin: 0;
+  color: #b7c6bd;
+  font-size: 11px;
+}
+.gym-profile-back {
+  min-height: 42px;
+  padding: 0 17px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #ffffff2b;
+  border-radius: 11px;
+  color: #f3f7eb;
+  background: #ffffff0d;
+  font-size: 10px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.gym-profile-tags {
+  margin-top: 28px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.gym-profile-tags span {
+  padding: 7px 11px;
+  border: 1px solid #d2e88c31;
+  border-radius: 20px;
+  color: #dbe7d2;
+  background: #d2e88c0d;
+  font-size: 8px;
+}
+.gym-profile-layout {
+  width: min(1180px, 100%);
+  margin: 18px auto 0;
+  display: grid;
+  grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
+  gap: 18px;
+}
+.gym-profile-info,
+.gym-profile-map-card,
+.gym-profile-reservation {
+  min-width: 0;
+  border: 1px solid #dce2d7;
+  border-radius: 20px;
+  background: #fff;
+}
+.gym-profile-info {
+  padding: 30px;
+}
+.gym-profile-section-heading h2,
+.gym-profile-map-heading h2 {
+  margin: 5px 0 0;
+  color: #2e493e;
+  font-size: 20px;
+}
+.gym-profile-info dl {
+  margin: 25px 0 22px;
+}
+.gym-profile-info dl > div {
+  padding: 13px 0;
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  gap: 14px;
+  border-top: 1px solid #e6eae3;
+  font-size: 10px;
+  line-height: 1.6;
+}
+.gym-profile-info dt {
+  color: #8a978f;
+}
+.gym-profile-info dd {
+  margin: 0;
+  color: #394f44;
+  font-weight: 650;
+}
+.gym-profile-external {
+  min-height: 43px;
+  padding: 0 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 11px;
+  color: #f7f9f2;
+  background: var(--forest);
+  font-size: 10px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.gym-profile-map-card {
+  padding: 20px;
+}
+.gym-profile-map-heading {
+  padding: 6px 7px 17px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.gym-profile-map {
+  width: 100%;
+  height: 340px;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #e9eee7;
+}
+.gym-detail-map-marker {
+  width: 36px;
+  height: 40px;
+  display: block;
+}
+.gym-detail-map-marker-shape {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 3px solid #f8faef;
+  border-radius: 50% 50% 50% 8px;
+  color: var(--lime);
+  background: var(--forest);
+  box-shadow: 0 5px 15px #183a2f4a;
+  transform: rotate(-45deg);
+}
+.gym-detail-map-marker-shape > span {
+  font-size: 9px;
+  transform: rotate(45deg);
+}
+.gym-profile-reservation {
+  grid-column: 1 / -1;
+  padding: 31px;
+  color: #ecf2e7;
+  background: linear-gradient(120deg, #263f34, #345548);
+}
+.gym-profile-reservation h2 {
+  margin: 9px 0;
+  font-size: 21px;
+}
+.gym-profile-reservation p {
+  max-width: 720px;
+  margin: 0;
+  color: #b9c8bf;
+  font-size: 10px;
+  line-height: 1.7;
+}
+.gym-profile-reservation button {
+  margin-top: 19px;
+  padding: 10px 15px;
+  border: 1px solid #ffffff1f;
+  border-radius: 9px;
+  color: #95a59c;
+  background: #ffffff0b;
+  font-size: 9px;
+}
 .gym-data-note {
   width: min(1380px, 100%);
   margin: 11px auto 0;
   color: #8a968d;
   font-size: 8px;
   text-align: right;
+}
+
+.account-admin-link {
+  margin-top: 0.7rem;
+}
+
+.admin-owner-page {
+  min-height: 100vh;
+  padding: 2.5rem clamp(1rem, 4vw, 4rem) 4rem;
+  color: #173424;
+  background: #f3f6ef;
+}
+
+.admin-owner-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  max-width: 1180px;
+  margin: 0 auto 1.5rem;
+  padding: 2rem;
+  border-radius: 26px;
+  color: #fff;
+  background: linear-gradient(135deg, #173f2a, #245f3d);
+}
+
+.admin-owner-header span,
+.admin-owner-section-title > span,
+.admin-owner-section-title div > span {
+  color: #b8ef73;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.admin-owner-header h1 {
+  margin: 0.45rem 0 0.55rem;
+}
+
+.admin-owner-header p {
+  margin: 0;
+  color: #d7e6dc;
+}
+
+.admin-owner-header a {
+  align-self: flex-start;
+  flex-shrink: 0;
+  padding: 0.8rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  color: #fff;
+  text-decoration: none;
+}
+
+.admin-owner-layout {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.34fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.admin-gym-picker,
+.admin-owner-card,
+.admin-owner-state {
+  border: 1px solid #d9e1d5;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 14px 36px rgba(24, 58, 38, 0.08);
+}
+
+.admin-gym-picker {
+  padding: 1rem;
+  align-self: start;
+}
+
+.admin-owner-section-title {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.admin-owner-section-title h2 {
+  margin: 0.25rem 0 0;
+  font-size: 1.35rem;
+}
+
+.admin-gym-picker label {
+  display: grid;
+  gap: 0.45rem;
+  font-weight: 700;
+}
+
+.admin-gym-picker select {
+  width: 100%;
+  padding: 0.85rem 2.4rem 0.85rem 0.9rem;
+  border: 1px solid #ccd8c8;
+  border-radius: 12px;
+  color: #173424;
+  background: #fff;
+  cursor: pointer;
+}
+
+.admin-selected-gym-summary {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 1rem;
+  padding: 0.9rem;
+  border: 1px solid #dbe6d6;
+  border-radius: 14px;
+  background: #eff9e7;
+}
+
+.admin-selected-gym-summary small,
+.admin-selected-gym-summary span,
+.admin-current-owners small {
+  margin-top: 0.25rem;
+  color: #6b7d70;
+}
+
+.admin-owner-workspace {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.admin-owner-card {
+  padding: 1.4rem;
+}
+
+.admin-owner-card h3 {
+  margin: 1.25rem 0 0.75rem;
+  font-size: 1rem;
+}
+
+.admin-current-owners {
+  display: grid;
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-current-owners li {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem;
+  border-radius: 14px;
+  background: #f5f8f2;
+}
+
+.admin-manager-info {
+  display: grid;
+}
+
+.admin-owner-avatar {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff;
+  font-weight: 800;
+  background: #28613e;
+}
+
+.admin-manager-actions {
+  display: flex;
+  gap: 0.45rem;
+}
+
+.admin-current-owners button,
+.admin-edit-cancel {
+  padding: 0.55rem 0.75rem;
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.admin-current-owners button.edit,
+.admin-edit-cancel {
+  border: 1px solid #8ead9a;
+  color: #285e3d;
+}
+
+.admin-current-owners button.delete {
+  border: 1px solid #d6a5a0;
+  color: #8b3028;
+}
+
+.admin-edit-guide {
+  margin: 0 0 0.5rem;
+  padding: 0.75rem 0.85rem;
+  border-radius: 10px;
+  color: #285e3d;
+  background: #eff9e7;
+}
+
+.admin-member-search,
+.admin-member-select {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 0.85rem;
+  font-weight: 700;
+}
+
+.admin-member-search input,
+.admin-member-select select {
+  width: 100%;
+  padding: 0.85rem 0.95rem;
+  border: 1px solid #ccd8c8;
+  border-radius: 12px;
+  color: #173424;
+  background: #fff;
+}
+
+.admin-assign-button {
+  margin-top: 1rem;
+  padding: 0.85rem 1.1rem;
+  border: 0;
+  border-radius: 12px;
+  color: #fff;
+  font-weight: 800;
+  background: #2d6c43;
+  cursor: pointer;
+}
+
+.admin-assign-button:disabled,
+.admin-current-owners button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.admin-owner-notice,
+.admin-owner-state {
+  max-width: 1180px;
+  margin: 0 auto 1rem;
+  padding: 1rem 1.2rem;
+}
+
+.admin-owner-notice.error {
+  color: #8b3028;
+  background: #fff0ed;
+}
+
+.admin-owner-notice.success {
+  color: #205d38;
+  background: #eaf8e7;
+}
+
+.admin-owner-empty {
+  color: #6b7d70;
+}
+
+@media (max-width: 760px) {
+  .admin-owner-header,
+  .admin-owner-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-owner-header {
+    display: grid;
+  }
+
+  .admin-current-owners li {
+    grid-template-columns: auto 1fr;
+  }
+
+  .admin-manager-actions {
+    grid-column: 1 / -1;
+  }
+
+  .admin-manager-actions button {
+    flex: 1;
+  }
 }
 @media (min-width: 1500px) {
   .hub-shell {
@@ -1925,6 +2556,27 @@ button {
   .gym-detail-card {
     right: 12px;
     bottom: 12px;
+  }
+  .gym-profile-hero {
+    margin-top: 16px;
+    padding: 28px 24px;
+  }
+  .gym-profile-heading {
+    margin-top: 28px;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .gym-profile-heading h1 {
+    font-size: 38px;
+  }
+  .gym-profile-layout {
+    grid-template-columns: 1fr;
+  }
+  .gym-profile-map {
+    height: 300px;
+  }
+  .gym-profile-reservation {
+    grid-column: auto;
   }
   .gym-data-note {
     text-align: left;
